@@ -9,6 +9,7 @@ namespace TeamAppService.Models
         public string Description { get; set; }
         public ISet<int> Executors;
         public bool IsCompleted { get; set; }
+        public long AssigneeID { get; set; }
 
         public void AddExecutor(int id)
         {
