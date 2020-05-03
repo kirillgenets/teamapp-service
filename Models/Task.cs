@@ -1,15 +1,33 @@
-﻿using System.Collections.Generic;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 namespace TeamAppService.Models
 {
     public class Task
     {
-        public long ID { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
+        [BsonId]
+        public ObjectId _id { get; set; }
         public ISet<int> Executors;
-        public bool IsCompleted { get; set; }
-        public long AssigneeID { get; set; }
+        [DataMember]
+        public long id { get; set; }
+        [DataMember]
+        public string title { get; set; }
+        [DataMember]
+        public string description { get; set; }
+        [DataMember]
+        public bool isCompleted { get; set; }
+        [DataMember]
+        public long assigneeId { get; set; }
+        [DataMember]
+        public string category { get; set; }
+        [DataMember]
+        public DateTime date { get; set; }
+        [DataMember]
+        public int page { get; set; }
 
         public void AddExecutor(int id)
         {

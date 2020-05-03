@@ -71,6 +71,10 @@
             "MongoDB.Driver": {
               "target": "Package",
               "version": "[2.10.3, )"
+            },
+            "MongoDB.Driver.GridFS": {
+              "target": "Package",
+              "version": "[2.10.3, )"
             }
           },
           "imports": [

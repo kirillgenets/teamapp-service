@@ -1,16 +1,18 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
 using TeamAppService.Models;
 
 namespace TeamAppService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TasksController : ControllerBase
+    public class TasksController : Controller
     {
         private readonly TaskContext _context;
 
@@ -21,9 +23,27 @@ namespace TeamAppService.Controllers
 
         // GET: api/Tasks
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Models.Task>>> GetTodoItems()
+        public async Task<ActionResult<List<Models.Task>>> GetTasks(
+            [FromQuery(Name = "id")] long? id,
+            [FromQuery(Name = "date")] DateTime? date,
+            [FromQuery(Name = "title")] string? title,
+            [FromQuery(Name = "page")] int? page,
+            [FromQuery(Name = "category")] string? category,
+            [FromQuery(Name = "assigneeId")] long? assigneeId,
+            [FromQuery(Name = "isCompleted")] bool? isCompleted
+        )
         {
-            return await _context.TodoItems.ToListAsync();
+            var tasks = await _context.GetTasks(
+                id,
+                date, 
+                title, 
+                page, 
+                category, 
+                assigneeId,
+                isCompleted
+            );
+
+            return tasks;
         }
 
         // GET: api/Tasks/5
@@ -46,7 +66,7 @@ namespace TeamAppService.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTask(long id, Models.Task task)
         {
-            if (id != task.ID)
+            if (id != task.id)
             {
                 return BadRequest();
             }
@@ -81,7 +101,9 @@ namespace TeamAppService.Controllers
             _context.TodoItems.Add(task);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetTask), new { id = task.ID }, task);
+            _context.Create(task);
+
+            return CreatedAtAction(nameof(GetTask), new { id = task.id }, task);
         }
 
         // DELETE: api/Tasks/5
@@ -102,7 +124,7 @@ namespace TeamAppService.Controllers
 
         private bool TaskExists(long id)
         {
-            return _context.TodoItems.Any(e => e.ID == id);
+            return _context.TodoItems.Any(e => e.id == id);
         }
     }
 }
