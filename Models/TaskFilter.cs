@@ -10,7 +10,6 @@ namespace TeamAppService.Models
         public DateTime? date { get; set; }
         public long? id { get; set; }
         public string? title { get; set; }
-        public int? page { get; set; }
         public string? category { get; set; }
         public long? assigneeId { get; set; }
     }

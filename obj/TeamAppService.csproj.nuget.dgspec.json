@@ -75,6 +75,10 @@
             "MongoDB.Driver.GridFS": {
               "target": "Package",
               "version": "[2.10.3, )"
+            },
+            "PagedList.Mvc": {
+              "target": "Package",
+              "version": "[4.5.0, )"
             }
           },
           "imports": [

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Bson;
+using PagedList;
 using TeamAppService.Models;
 
 namespace TeamAppService.Controllers
@@ -27,23 +27,23 @@ namespace TeamAppService.Controllers
             [FromQuery(Name = "id")] long? id,
             [FromQuery(Name = "date")] DateTime? date,
             [FromQuery(Name = "title")] string? title,
-            [FromQuery(Name = "page")] int? page,
             [FromQuery(Name = "category")] string? category,
             [FromQuery(Name = "assigneeId")] long? assigneeId,
-            [FromQuery(Name = "isCompleted")] bool? isCompleted
+            [FromQuery(Name = "isCompleted")] bool? isCompleted,
+            [FromQuery(Name = "pageSize")] int pageSize = 10,
+            [FromQuery(Name = "page")] int page = 1
         )
         {
             var tasks = await _context.GetTasks(
                 id,
                 date, 
                 title, 
-                page, 
                 category, 
                 assigneeId,
                 isCompleted
             );
 
-            return tasks;
+            return tasks.ToPagedList(page, pageSize).ToList();
         }
 
         // GET: api/Tasks/5

@@ -26,8 +26,6 @@ namespace TeamAppService.Models
         public string category { get; set; }
         [DataMember]
         public DateTime date { get; set; }
-        [DataMember]
-        public int page { get; set; }
 
         public void AddExecutor(int id)
         {

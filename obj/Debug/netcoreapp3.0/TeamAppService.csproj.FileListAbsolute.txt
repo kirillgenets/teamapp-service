@@ -221,4 +221,6 @@ C:\Users\kiril\Desktop\studies + work\college\coursework\3rd course\TeamApp!\tea
 C:\Users\kiril\Desktop\studies + work\college\coursework\3rd course\TeamApp!\teamapp-service\bin\Debug\netcoreapp3.0\MongoDB.Libmongocrypt.dll
 C:\Users\kiril\Desktop\studies + work\college\coursework\3rd course\TeamApp!\teamapp-service\bin\Debug\netcoreapp3.0\SharpCompress.dll
 C:\Users\kiril\Desktop\studies + work\college\coursework\3rd course\TeamApp!\teamapp-service\bin\Debug\netcoreapp3.0\MongoDB.Driver.GridFS.dll
+C:\Users\kiril\Desktop\studies + work\college\coursework\3rd course\TeamApp!\teamapp-service\bin\Debug\netcoreapp3.0\PagedList.dll
+C:\Users\kiril\Desktop\studies + work\college\coursework\3rd course\TeamApp!\teamapp-service\bin\Debug\netcoreapp3.0\PagedList.Mvc.dll
 C:\Users\kiril\Desktop\studies + work\college\coursework\3rd course\TeamApp!\teamapp-service\obj\Debug\netcoreapp3.0\TeamAppService.MvcApplicationPartsAssemblyInfo.cache

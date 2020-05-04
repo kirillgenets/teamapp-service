@@ -43,7 +43,6 @@ namespace TeamAppService.Models
             long? id,
             DateTime? date,
             string? title,
-            int? page, 
             string? category,
             long? assigneeId,
             bool? isCompleted
@@ -67,11 +66,6 @@ namespace TeamAppService.Models
                 filter = filter & filterBuilder.Eq("date", date.ToString());
             }
 
-            if (page.HasValue)
-            {
-                filter = filter & filterBuilder.Eq("page", page.Value);
-            }
-
             if (assigneeId.HasValue)
             {
                 filter = filter & filterBuilder.Eq("assigneeId", assigneeId.Value);
@@ -79,7 +73,7 @@ namespace TeamAppService.Models
 
             if (isCompleted.HasValue)
             {
-                filter = filter & filterBuilder.Eq("assigneeId", isCompleted.Value);
+                filter = filter & filterBuilder.Eq("isCompleted", isCompleted.Value);
             }
 
             if (!String.IsNullOrWhiteSpace(category))
