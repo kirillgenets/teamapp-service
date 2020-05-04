@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -34,12 +33,12 @@ namespace TeamAppService.Models
             gridFS = new GridFSBucket(database);
         }
 
-        public IMongoCollection<Task> Tasks
+        public IMongoCollection<Models.Task> Tasks
         {
             get { return database.GetCollection<Task>("Tasks"); }
         }
 
-        public async Task<List<Task>> GetTasks(
+        public async Task<List<Models.Task>> GetTasks(
             long? id,
             DateTime? date,
             string? title,
@@ -84,10 +83,25 @@ namespace TeamAppService.Models
             return await Tasks.Find(filter).ToListAsync();
         }
 
-        public async void Create(Task task)
+        public async Task<Models.Task> GetTask(long id)
+        {
+            return await Tasks.Find(new BsonDocument("id", id)).FirstOrDefaultAsync();
+        }
+
+        public async System.Threading.Tasks.Task Create(Task task)
         {
             await Tasks.InsertOneAsync(task);
-        }   
+        }
+
+        public async System.Threading.Tasks.Task Update(Task task)
+        {
+            await Tasks.ReplaceOneAsync(new BsonDocument("id", task.id), task);
+        }
+
+        public async System.Threading.Tasks.Task Remove(long id)
+        {
+            await Tasks.DeleteOneAsync(new BsonDocument("id", id));
+        }
 
         public DbSet<Task> TodoItems { get; set; }
     }

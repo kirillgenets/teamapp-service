@@ -101,7 +101,7 @@ namespace TeamAppService.Controllers
             _context.TodoItems.Add(task);
             await _context.SaveChangesAsync();
 
-            _context.Create(task);
+            await _context.Create(task);
 
             return CreatedAtAction(nameof(GetTask), new { id = task.id }, task);
         }
@@ -110,13 +110,13 @@ namespace TeamAppService.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Models.Task>> DeleteTask(long id)
         {
-            var task = await _context.TodoItems.FindAsync(id);
+            var task = await _context.GetTask(id);
             if (task == null)
             {
                 return NotFound();
             }
 
-            _context.TodoItems.Remove(task);
+            await _context.Remove(id);
             await _context.SaveChangesAsync();
 
             return task;
@@ -124,7 +124,9 @@ namespace TeamAppService.Controllers
 
         private bool TaskExists(long id)
         {
-            return _context.TodoItems.Any(e => e.id == id);
+            var task = _context.GetTask(id);
+
+            return task == null ? false : true;
         }
     }
 }
