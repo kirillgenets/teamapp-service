@@ -50,9 +50,9 @@ namespace TeamAppService.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Models.Task>> GetTask(long id)
         {
-            var task = await _context.TodoItems.FindAsync(id);
+            var task = await _context.GetTask(id);
 
-            if (task == null)
+            if (task == null || !TaskExists(id))
             {
                 return NotFound();
             }
@@ -64,18 +64,21 @@ namespace TeamAppService.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTask(long id, Models.Task task)
+        public async Task<ActionResult<Models.Task>> PutTask(long id, Models.Task task)
         {
-            if (id != task.id)
-            {
-                return BadRequest();
-            }
+            var originalTask = await _context.GetTask(id);
 
-            _context.Entry(task).State = EntityState.Modified;
+            task.id = id;
+            task.date = originalTask.date;
+            task._id = originalTask._id;
+
+            await _context.Update(task);
 
             try
             {
                 await _context.SaveChangesAsync();
+
+                return task;
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -88,8 +91,6 @@ namespace TeamAppService.Controllers
                     throw;
                 }
             }
-
-            return NoContent();
         }
 
         // POST: api/Tasks
@@ -98,10 +99,8 @@ namespace TeamAppService.Controllers
         [HttpPost]
         public async Task<ActionResult<Models.Task>> PostTask(Models.Task task)
         {
-            _context.TodoItems.Add(task);
-            await _context.SaveChangesAsync();
-
             await _context.Create(task);
+            await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetTask), new { id = task.id }, task);
         }

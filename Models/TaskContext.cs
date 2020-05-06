@@ -90,6 +90,9 @@ namespace TeamAppService.Models
 
         public async System.Threading.Tasks.Task Create(Task task)
         {
+            task.id = Tasks.Find(new FilterDefinitionBuilder<Task>().Empty).ToList().Count; // auto-increment (each new item has an id equal to the items count)
+            task.date = DateTime.Now;
+
             await Tasks.InsertOneAsync(task);
         }
 
