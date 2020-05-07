@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TeamAppService.Models;
+using System.Diagnostics;
 
 namespace TeamAppService
 {
@@ -30,6 +31,17 @@ namespace TeamAppService
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            string runDbFilePath = System.IO.Directory.GetCurrentDirectory() + "\\run-db.bat";
+
+            // starting MongoDB server
+            Process process = new Process();
+            process.StartInfo.FileName = @"C:\\Windows\\System32\cmd.exe";
+            process.StartInfo.Arguments = runDbFilePath;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.CreateNoWindow = false;
+
+            process.Start();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
