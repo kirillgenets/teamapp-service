@@ -31,7 +31,8 @@ namespace TeamAppService.Controllers
             [FromQuery(Name = "assigneeId")] long? assigneeId,
             [FromQuery(Name = "isCompleted")] bool? isCompleted,
             [FromQuery(Name = "pageSize")] int pageSize = 10,
-            [FromQuery(Name = "page")] int page = 1
+            [FromQuery(Name = "page")] int page = 1,
+            [FromQuery(Name = "showAll")] bool showAll = false
         )
         {
             var tasks = await _context.GetTasks(
@@ -43,7 +44,7 @@ namespace TeamAppService.Controllers
                 isCompleted
             );
 
-            return tasks.ToPagedList(page, pageSize).ToList();
+            return showAll ? tasks : tasks.ToPagedList(page, pageSize).ToList();
         }
 
         // GET: api/Tasks/5

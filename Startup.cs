@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Cors;
 using TeamAppService.Models;
 using System.Diagnostics;
 
@@ -19,7 +18,7 @@ namespace TeamAppService
         }
 
         public IConfiguration Configuration { get; }
-
+        
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -27,23 +26,14 @@ namespace TeamAppService
             services.AddMvc();
             services.AddDbContext<TaskContext>(opt =>
                 opt.UseInMemoryDatabase("TaskList"));
+            services.AddDbContext<UserContext>(opt =>
+                opt.UseInMemoryDatabase("UserList"));
             services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            string runDbFilePath = System.IO.Directory.GetCurrentDirectory() + "\\run-db.bat";
-
-            // starting MongoDB server
-            Process process = new Process();
-            process.StartInfo.FileName = @"C:\\Windows\\System32\cmd.exe";
-            process.StartInfo.Arguments = runDbFilePath;
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.CreateNoWindow = false;
-
-            process.Start();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

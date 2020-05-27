@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Driver.GridFS;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 
@@ -13,7 +12,6 @@ namespace TeamAppService.Models
     public class TaskContext : DbContext 
     {
         IMongoDatabase database;
-        IGridFSBucket gridFS;
 
         public TaskContext(DbContextOptions<TaskContext> options)
             : base(options)
@@ -30,7 +28,6 @@ namespace TeamAppService.Models
             MongoClient client = new MongoClient(connectionString);
 
             database = client.GetDatabase(connection.DatabaseName);
-            gridFS = new GridFSBucket(database);
         }
 
         public IMongoCollection<Models.Task> Tasks
