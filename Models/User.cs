@@ -16,5 +16,6 @@ namespace TeamAppService.Models
         public string login { get; set; }
         [DataMember]
         public string password { get; set; }
+        public DateTime date { get; set; }
     }
 }
