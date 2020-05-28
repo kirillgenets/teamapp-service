@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using TeamAppService.Models;
 
 namespace TeamAppService.Models
 {
@@ -30,7 +31,7 @@ namespace TeamAppService.Models
             database = client.GetDatabase(connection.DatabaseName);
         }
 
-        public async System.Threading.Tasks.Task<List<User>> GetTasks(
+        public async System.Threading.Tasks.Task<List<User>> GetUsers(
             long? id,
             DateTime? date
         )
@@ -56,7 +57,7 @@ namespace TeamAppService.Models
             get { return database.GetCollection<User>("Users"); }
         }
 
-        public string hashPassword(string password)
+        public string HashPassword(string password)
         {
             return Encoding.ASCII.GetString(System.Security.Cryptography.SHA1.Create().ComputeHash(Encoding.ASCII.GetBytes(password)));
         }
@@ -65,13 +66,15 @@ namespace TeamAppService.Models
         {
             user.id = Users.Find(new FilterDefinitionBuilder<User>().Empty).ToList().Count; // auto-increment (each new item has an id equal to the items count)
             user.date = DateTime.Now;
-            user.password = hashPassword(user.password);
+            user.password = HashPassword(user.password);
 
             await Users.InsertOneAsync(user);
         }
 
         public async System.Threading.Tasks.Task Update(User user)
         {
+            user.password = HashPassword(user.password);
+
             await Users.ReplaceOneAsync(new BsonDocument("id", user.id), user);
         }
 
@@ -88,9 +91,25 @@ namespace TeamAppService.Models
         public async System.Threading.Tasks.Task<AuthConfirmation> IsAuth(string login, string password)
         {
             User user = await Users.Find(new BsonDocument("login", login)).FirstOrDefaultAsync();
-            AuthConfirmation confirmation = new AuthConfirmation(hashPassword(user.password) == hashPassword(password));
+            AuthConfirmation confirmation = new AuthConfirmation(user.password == HashPassword(password));
 
             return confirmation;
         }
+
+        public async System.Threading.Tasks.Task<bool> IsUnique(string login, long? id = null)
+        {
+            User existingUser = await Users.Find(new BsonDocument("login", login)).FirstOrDefaultAsync();
+
+            if (id != null)
+            {
+                User currentUser = await Users.Find(new BsonDocument("id", id)).FirstOrDefaultAsync();
+
+                return existingUser == null || existingUser.login == currentUser.login || existingUser.login != login;
+            }
+
+            return existingUser == null;
+        }
+
+        public DbSet<TeamAppService.Models.User> User { get; set; }
     }
 }
