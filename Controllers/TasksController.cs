@@ -30,6 +30,7 @@ namespace TeamAppService.Controllers
             [FromQuery(Name = "category")] string? category,
             [FromQuery(Name = "assigneeId")] long? assigneeId,
             [FromQuery(Name = "isCompleted")] bool? isCompleted,
+            [FromQuery(Name = "teamId")] long? teamId,
             [FromQuery(Name = "pageSize")] int pageSize = 10,
             [FromQuery(Name = "page")] int page = 1,
             [FromQuery(Name = "showAll")] bool showAll = false
@@ -41,7 +42,8 @@ namespace TeamAppService.Controllers
                 title, 
                 category, 
                 assigneeId,
-                isCompleted
+                isCompleted,
+                teamId
             );
 
             return showAll ? tasks : tasks.ToPagedList(page, pageSize).ToList();

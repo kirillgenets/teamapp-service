@@ -96,18 +96,29 @@ namespace TeamAppService.Models
             return confirmation;
         }
 
-        public async System.Threading.Tasks.Task<bool> IsUnique(string login, long? id = null)
+        public async System.Threading.Tasks.Task<bool> IsUnique(string login, long? id = null, long? teamId = null)
         {
-            User existingUser = await Users.Find(new BsonDocument("login", login)).FirstOrDefaultAsync();
+            var filterBuilder = new FilterDefinitionBuilder<User>();
+            var filter = filterBuilder.Empty;
+
+            if (login != null)
+            {
+                filter = filter & filterBuilder.Eq("login", login);
+            }
 
             if (id != null)
             {
-                User currentUser = await Users.Find(new BsonDocument("id", id)).FirstOrDefaultAsync();
-
-                return existingUser == null || existingUser.login == currentUser.login || existingUser.login != login;
+                filter = filter & filterBuilder.Not(filterBuilder.Eq("id", id.Value));
             }
 
-            return existingUser == null;
+            if (teamId != null)
+            {
+                filter = filter & filterBuilder.Eq("teamId", teamId.Value);
+            }
+
+            var foundUsersList = await Users.Find(filter).ToListAsync();
+
+            return foundUsersList.Count == 0;
         }
 
         public DbSet<TeamAppService.Models.User> User { get; set; }

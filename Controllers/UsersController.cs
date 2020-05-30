@@ -62,7 +62,7 @@ namespace TeamAppService.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<Models.User>> PutUser(long id, User user)
         {
-            bool isUnique = await _context.IsUnique(user.login, id);
+            bool isUnique = await _context.IsUnique(user.login, id, user.teamId);
 
             if (!isUnique)
             {
@@ -102,7 +102,7 @@ namespace TeamAppService.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
         {
-            bool isUnique = await _context.IsUnique(user.login);
+            bool isUnique = await _context.IsUnique(user.login, null, user.teamId);
 
             if (!isUnique)
             {

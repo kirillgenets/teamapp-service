@@ -41,7 +41,8 @@ namespace TeamAppService.Models
             string? title,
             string? category,
             long? assigneeId,
-            bool? isCompleted
+            bool? isCompleted,
+            long? teamId
         )
         {
             var filterBuilder = new FilterDefinitionBuilder<Task>();
@@ -75,6 +76,11 @@ namespace TeamAppService.Models
             if (!String.IsNullOrWhiteSpace(category))
             {
                 filter = filter & filterBuilder.Eq("category", category);
+            }
+
+            if (teamId.HasValue)
+            {
+                filter = filter & filterBuilder.Eq("teamId", teamId.Value);
             }
 
             return await Tasks.Find(filter).ToListAsync();

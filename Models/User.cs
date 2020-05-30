@@ -1,7 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace TeamAppService.Models
@@ -16,6 +15,10 @@ namespace TeamAppService.Models
         public string login { get; set; }
         [DataMember]
         public string password { get; set; }
+        [DataMember]
         public DateTime date { get; set; }
+        [DataMember]
+        public long teamId { get; set; }
+
     }
 }
