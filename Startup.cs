@@ -28,6 +28,8 @@ namespace TeamAppService
                 opt.UseInMemoryDatabase("TaskList"));
             services.AddDbContext<UserContext>(opt =>
                 opt.UseInMemoryDatabase("UserList"));
+            services.AddDbContext<TeamContext>(opt =>
+                opt.UseInMemoryDatabase("TeamList"));
             services.AddControllers();
         }
 

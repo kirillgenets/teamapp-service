@@ -6,6 +6,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using TeamAppService.Helpers;
 
 namespace TeamAppService.Models
 {
@@ -16,18 +17,7 @@ namespace TeamAppService.Models
         public TaskContext(DbContextOptions<TaskContext> options)
             : base(options)
         {
-            string projectPath = Directory.GetCurrentDirectory();
-            
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-                .SetBasePath(projectPath)
-                .AddJsonFile("appsettings.json")
-                .Build();
-            
-            string connectionString = configuration.GetSection("TeamAppDatabaseSettings").GetSection("ConnectionString").Value;
-            var connection = new MongoUrlBuilder(connectionString);
-            MongoClient client = new MongoClient(connectionString);
-
-            database = client.GetDatabase(connection.DatabaseName);
+            database = DatabaseHelper.GetDatabase();
         }
 
         public IMongoCollection<Models.Task> Tasks

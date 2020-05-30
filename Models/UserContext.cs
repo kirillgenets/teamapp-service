@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using TeamAppService.Helpers;
 using TeamAppService.Models;
 
 namespace TeamAppService.Models
@@ -17,18 +18,7 @@ namespace TeamAppService.Models
         public UserContext(DbContextOptions<UserContext> options)
             : base(options)
         {
-            string projectPath = Directory.GetCurrentDirectory();
-
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-                .SetBasePath(projectPath)
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-            string connectionString = configuration.GetSection("TeamAppDatabaseSettings").GetSection("ConnectionString").Value;
-            var connection = new MongoUrlBuilder(connectionString);
-            MongoClient client = new MongoClient(connectionString);
-
-            database = client.GetDatabase(connection.DatabaseName);
+            database = DatabaseHelper.GetDatabase();
         }
 
         public async System.Threading.Tasks.Task<List<User>> GetUsers(
@@ -57,23 +47,18 @@ namespace TeamAppService.Models
             get { return database.GetCollection<User>("Users"); }
         }
 
-        public string HashPassword(string password)
-        {
-            return Encoding.ASCII.GetString(System.Security.Cryptography.SHA1.Create().ComputeHash(Encoding.ASCII.GetBytes(password)));
-        }
-
         public async System.Threading.Tasks.Task Create(User user)
         {
             user.id = Users.Find(new FilterDefinitionBuilder<User>().Empty).ToList().Count; // auto-increment (each new item has an id equal to the items count)
             user.date = DateTime.Now;
-            user.password = HashPassword(user.password);
+            user.password = PasswordHelper.HashPassword(user.password);
 
             await Users.InsertOneAsync(user);
         }
 
         public async System.Threading.Tasks.Task Update(User user)
         {
-            user.password = HashPassword(user.password);
+            user.password = PasswordHelper.HashPassword(user.password);
 
             await Users.ReplaceOneAsync(new BsonDocument("id", user.id), user);
         }
@@ -91,7 +76,7 @@ namespace TeamAppService.Models
         public async System.Threading.Tasks.Task<AuthConfirmation> IsAuth(string login, string password)
         {
             User user = await Users.Find(new BsonDocument("login", login)).FirstOrDefaultAsync();
-            AuthConfirmation confirmation = new AuthConfirmation(user.password == HashPassword(password));
+            AuthConfirmation confirmation = new AuthConfirmation(PasswordHelper.IsCorrect(user.password, password));
 
             return confirmation;
         }

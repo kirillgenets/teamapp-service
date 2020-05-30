@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using TeamAppService.Helpers;
 using TeamAppService.Models;
 
 namespace TeamAppService.Models
@@ -17,27 +18,28 @@ namespace TeamAppService.Models
         public TeamContext(DbContextOptions<TeamContext> options)
             : base(options)
         {
-            string projectPath = Directory.GetCurrentDirectory();
-
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-                .SetBasePath(projectPath)
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-            string connectionString = configuration.GetSection("TeamAppDatabaseSettings").GetSection("ConnectionString").Value;
-            var connection = new MongoUrlBuilder(connectionString);
-            MongoClient client = new MongoClient(connectionString);
-
-            database = client.GetDatabase(connection.DatabaseName);
+            database = DatabaseHelper.GetDatabase();
         }
 
         public async System.Threading.Tasks.Task<List<Team>> GetTeams(
             long? id,
-            DateTime? date
+            DateTime? date,
+            string? name,
+            string? title
         )
         {
             var filterBuilder = new FilterDefinitionBuilder<Team>();
             var filter = filterBuilder.Empty;
+
+            if (!String.IsNullOrWhiteSpace(name))
+            {
+                filter = filter & filterBuilder.Eq("name", name);
+            }
+
+            if (!String.IsNullOrWhiteSpace(title))
+            {
+                filter = filter & filterBuilder.Eq("title", title);
+            }
 
             if (id.HasValue)
             {
@@ -57,23 +59,18 @@ namespace TeamAppService.Models
             get { return database.GetCollection<Team>("Teams"); }
         }
 
-        public string HashPassword(string password)
-        {
-            return Encoding.ASCII.GetString(System.Security.Cryptography.SHA1.Create().ComputeHash(Encoding.ASCII.GetBytes(password)));
-        }
-
         public async System.Threading.Tasks.Task Create(Team team)
         {
             team.id = Teams.Find(new FilterDefinitionBuilder<Team>().Empty).ToList().Count; // auto-increment (each new item has an id equal to the items count)
             team.date = DateTime.Now;
-            team.password = HashPassword(team.password);
+            team.password = PasswordHelper.HashPassword(team.password);
 
             await Teams.InsertOneAsync(team);
         }
 
         public async System.Threading.Tasks.Task Update(Team team)
         {
-            team.password = HashPassword(team.password);
+            team.password = PasswordHelper.HashPassword(team.password);
 
             await Teams.ReplaceOneAsync(new BsonDocument("id", team.id), team);
         }
@@ -91,26 +88,24 @@ namespace TeamAppService.Models
         public async System.Threading.Tasks.Task<AuthConfirmation> IsAuth(string login, string password)
         {
             Team team = await Teams.Find(new BsonDocument("login", login)).FirstOrDefaultAsync();
-            AuthConfirmation confirmation = new AuthConfirmation(team.password == HashPassword(password));
+            AuthConfirmation confirmation = new AuthConfirmation(PasswordHelper.IsCorrect(team.password, password));
 
             return confirmation;
         }
 
-        public async System.Threading.Tasks.Task<bool> IsUnique(string login, long? id = null, long? teamId = null)
+        public async System.Threading.Tasks.Task<bool> IsUnique(string name, long? id = null)
         {
             var filterBuilder = new FilterDefinitionBuilder<Team>();
             var filter = filterBuilder.Empty;
 
-            // User existingUser = await Users.Find(new BsonDocument("login", login)).FirstOrDefaultAsync();
+            if (name != null)
+            {
+                filter = filter & filterBuilder.Eq("name", name);
+            }
 
             if (id != null)
             {
                 filter = filter & filterBuilder.Not(filterBuilder.Eq("id", id.Value));
-            }
-
-            if (teamId != null)
-            {
-                filter = filter & filterBuilder.Eq("teamId", teamId.Value);
             }
 
             var foundTeamsList = await Teams.Find(filter).ToListAsync();
