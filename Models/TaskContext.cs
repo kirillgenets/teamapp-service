@@ -83,8 +83,14 @@ namespace TeamAppService.Models
 
         public async System.Threading.Tasks.Task Create(Task task)
         {
+            var team = database.GetCollection<Team>("Teams").Find(new BsonDocument("id", task.teamId)).FirstOrDefaultAsync().Result;
+            var assignee = database.GetCollection<User>("Users").Find(new BsonDocument("id", task.assigneeId)).FirstOrDefaultAsync().Result;
+
             task.id = Tasks.Find(new FilterDefinitionBuilder<Task>().Empty).ToList().Count; // auto-increment (each new item has an id equal to the items count)
             task.date = DateTime.Now;
+            task.teamName = team.name;
+            task.teamTitle = team.title;
+            task.assigneeLogin = assignee.login;
 
             await Tasks.InsertOneAsync(task);
         }

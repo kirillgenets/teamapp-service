@@ -19,6 +19,9 @@ namespace TeamAppService.Models
         public DateTime date { get; set; }
         [DataMember]
         public long teamId { get; set; }
-
+        [DataMember]
+        public string teamName { get; set; }
+        [DataMember]
+        public string teamTitle { get; set; }
     }
 }

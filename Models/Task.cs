@@ -22,11 +22,17 @@ namespace TeamAppService.Models
         [DataMember]
         public long assigneeId { get; set; }
         [DataMember]
+        public string assigneeLogin { get; set; }
+        [DataMember]
         public string category { get; set; }
         [DataMember]
         public DateTime date { get; set; }
         [DataMember]
         public long teamId { get; set; }
+        [DataMember]
+        public string teamName { get; set; }
+        [DataMember]
+        public string teamTitle { get; set; }
 
         public void AddExecutor(int id)
         {
