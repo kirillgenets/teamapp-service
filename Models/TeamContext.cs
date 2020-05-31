@@ -85,9 +85,9 @@ namespace TeamAppService.Models
             return await Teams.Find(new BsonDocument("id", id)).FirstOrDefaultAsync();
         }
 
-        public async System.Threading.Tasks.Task<AuthConfirmation> IsAuth(string login, string password)
+        public async System.Threading.Tasks.Task<AuthConfirmation> IsAuth(string name, string password)
         {
-            Team team = await Teams.Find(new BsonDocument("login", login)).FirstOrDefaultAsync();
+            Team team = await Teams.Find(new BsonDocument("name", name)).FirstOrDefaultAsync();
             AuthConfirmation confirmation = new AuthConfirmation(PasswordHelper.IsCorrect(team.password, password));
 
             return confirmation;

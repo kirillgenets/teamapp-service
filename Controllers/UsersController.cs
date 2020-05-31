@@ -26,17 +26,19 @@ namespace TeamAppService.Controllers
             [FromQuery(Name = "id")] long? id,
             [FromQuery(Name = "date")] DateTime? date,
             [FromQuery(Name = "login")] string? login,
-            [FromQuery(Name = "password")] string? password
+            [FromQuery(Name = "password")] string? password,
+            [FromQuery(Name = "teamName")] string? teamName
         )
         {
-            if (login != null && password != null)
+            if (login != null && password != null && teamName != null)
             {
-                return await _context.IsAuth(login, password);
+                return await _context.IsAuth(login, password, teamName);
             }
 
             var users = await _context.GetUsers(
                 id,
-                date
+                date,
+                teamName
             );
 
             return users;

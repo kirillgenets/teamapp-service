@@ -23,7 +23,8 @@ namespace TeamAppService.Models
 
         public async System.Threading.Tasks.Task<List<User>> GetUsers(
             long? id,
-            DateTime? date
+            DateTime? date,
+            string? teamName
         )
         {
             var filterBuilder = new FilterDefinitionBuilder<User>();
@@ -37,6 +38,11 @@ namespace TeamAppService.Models
             if (date.HasValue)
             {
                 filter = filter & filterBuilder.Eq("date", date.ToString());
+            }
+
+            if (!String.IsNullOrWhiteSpace(teamName))
+            {
+                filter = filter & filterBuilder.Eq("teamName", teamName);
             }
 
             return await Users.Find(filter).ToListAsync();
@@ -77,10 +83,23 @@ namespace TeamAppService.Models
             return await Users.Find(new BsonDocument("id", id)).FirstOrDefaultAsync();
         }
 
-        public async System.Threading.Tasks.Task<AuthConfirmation> IsAuth(string login, string password)
+        public async System.Threading.Tasks.Task<AuthConfirmation> IsAuth(string login, string password, string teamName)
         {
-            User user = await Users.Find(new BsonDocument("login", login)).FirstOrDefaultAsync();
-            AuthConfirmation confirmation = new AuthConfirmation(PasswordHelper.IsCorrect(user.password, password));
+            var filterBuilder = new FilterDefinitionBuilder<User>();
+            var filter = filterBuilder.Empty;
+
+            if (!String.IsNullOrWhiteSpace(login))
+            {
+                filter = filter & filterBuilder.Eq("login", login);
+            }
+
+            if (!String.IsNullOrWhiteSpace(teamName))
+            {
+                filter = filter & filterBuilder.Eq("teamName", teamName);
+            }
+
+            User user = await Users.Find(filter).FirstOrDefaultAsync();
+            AuthConfirmation confirmation = new AuthConfirmation(user != null && PasswordHelper.IsCorrect(user.password, password));
 
             return confirmation;
         }
@@ -90,7 +109,7 @@ namespace TeamAppService.Models
             var filterBuilder = new FilterDefinitionBuilder<User>();
             var filter = filterBuilder.Empty;
 
-            if (login != null)
+            if (!String.IsNullOrWhiteSpace(login))
             {
                 filter = filter & filterBuilder.Eq("login", login);
             }
