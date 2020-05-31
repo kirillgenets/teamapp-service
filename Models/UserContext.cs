@@ -55,12 +55,12 @@ namespace TeamAppService.Models
 
         public async System.Threading.Tasks.Task Create(User user)
         {
-            var team = database.GetCollection<Team>("Teams").Find(new BsonDocument("id", user.teamId)).FirstOrDefaultAsync().Result;
+            var team = database.GetCollection<Team>("Teams").Find(new BsonDocument("id", user.teamName)).FirstOrDefaultAsync().Result;
 
             user.id = Users.Find(new FilterDefinitionBuilder<User>().Empty).ToList().Count; // auto-increment (each new item has an id equal to the items count)
             user.date = DateTime.Now;
             user.password = PasswordHelper.HashPassword(user.password);
-            user.teamName = team.name;
+            user.teamId = team.id;
             user.teamTitle = team.title;
 
             await Users.InsertOneAsync(user);
