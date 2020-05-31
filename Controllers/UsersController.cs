@@ -102,16 +102,24 @@ namespace TeamAppService.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<User>> PostUser(PostUser user)
         {
-            bool isUnique = await _context.IsUnique(user.login, null, user.teamId);
+            bool isUnique = await _context.IsUnique(user.login, null, user.teamId, user.teamName);
+            bool isTeamAuth = await _context.IsTeamAuth(user.teamName, user.teamPassword);
+
+            if (!isTeamAuth)
+            {
+                return ValidationProblem(null, null, null, "Team name or team password is incorrect");
+            }
 
             if (!isUnique)
             {
                 return ValidationProblem(null, null, null, "Login must be unique");
             }
 
-            await _context.Create(user);
+            User correctUser = new User(user.login, user.password, user.teamName);
+
+            await _context.Create(correctUser);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetUser), new { id = user.id }, user);

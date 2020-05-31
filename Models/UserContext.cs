@@ -105,7 +105,7 @@ namespace TeamAppService.Models
             return confirmation;
         }
 
-        public async System.Threading.Tasks.Task<bool> IsUnique(string login, long? id = null, long? teamId = null)
+        public async System.Threading.Tasks.Task<bool> IsUnique(string login, long? id = null, long? teamId = null, string? teamName = null)
         {
             var filterBuilder = new FilterDefinitionBuilder<User>();
             var filter = filterBuilder.Empty;
@@ -125,9 +125,21 @@ namespace TeamAppService.Models
                 filter = filter & filterBuilder.Eq("teamId", teamId.Value);
             }
 
+            if (!String.IsNullOrWhiteSpace(teamName))
+            {
+                filter = filter & filterBuilder.Eq("teamName", teamName);
+            }
+
             var foundUsersList = await Users.Find(filter).ToListAsync();
 
             return foundUsersList.Count == 0;
+        }
+
+        public async System.Threading.Tasks.Task<bool> IsTeamAuth(string? name, string? password)
+        {
+            Team team = await database.GetCollection<Team>("Teams").Find(new BsonDocument("name", name)).FirstOrDefaultAsync();
+
+            return team != null && PasswordHelper.IsCorrect(team.password, password);
         }
 
         public DbSet<TeamAppService.Models.User> User { get; set; }

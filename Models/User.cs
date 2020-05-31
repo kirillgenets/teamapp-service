@@ -23,5 +23,12 @@ namespace TeamAppService.Models
         public string teamName { get; set; }
         [DataMember]
         public string teamTitle { get; set; }
+
+        public User(string login, string password, string teamName)
+        {
+            this.login = login;
+            this.password = password;
+            this.teamName = teamName;
+        }
     }
 }
