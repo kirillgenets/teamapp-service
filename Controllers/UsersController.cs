@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TeamAppService.Helpers;
 using TeamAppService.Models;
 
 namespace TeamAppService.Controllers
@@ -27,12 +28,13 @@ namespace TeamAppService.Controllers
             [FromQuery(Name = "date")] DateTime? date,
             [FromQuery(Name = "login")] string? login,
             [FromQuery(Name = "password")] string? password,
-            [FromQuery(Name = "teamName")] string? teamName
+            [FromQuery(Name = "teamName")] string? teamName,
+            [FromQuery(Name = "teamId")] long? teamId
         )
         {
-            if (login != null && password != null && teamName != null)
+            if (login != null && password != null && (teamName != null || teamId != null))
             {
-                return await _context.IsAuth(login, password, teamName);
+                return await _context.IsAuth(login, password, teamName, teamId);
             }
 
             var users = await _context.GetUsers(
@@ -122,7 +124,9 @@ namespace TeamAppService.Controllers
             await _context.Create(correctUser);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetUser), new { id = user.id }, user);
+            correctUser.password = PasswordHelper.HashPassword(user.password);
+
+            return CreatedAtAction(nameof(GetUser), new { id = user.id }, correctUser);
         }
 
         // DELETE: api/Users/5

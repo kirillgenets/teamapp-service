@@ -84,7 +84,7 @@ namespace TeamAppService.Models
             return await Users.Find(new BsonDocument("id", id)).FirstOrDefaultAsync();
         }
 
-        public async System.Threading.Tasks.Task<AuthConfirmation> IsAuth(string login, string password, string teamName)
+        public async System.Threading.Tasks.Task<dynamic> IsAuth(string login, string password, string teamName, long? teamId = null)
         {
             var filterBuilder = new FilterDefinitionBuilder<User>();
             var filter = filterBuilder.Empty;
@@ -99,10 +99,14 @@ namespace TeamAppService.Models
                 filter = filter & filterBuilder.Eq("teamName", teamName);
             }
 
-            User user = await Users.Find(filter).FirstOrDefaultAsync();
-            AuthConfirmation confirmation = new AuthConfirmation(user != null && PasswordHelper.IsCorrect(user.password, password));
+            if (teamId.HasValue)
+            {
+                filter = filter & filterBuilder.Eq("teamId", teamId.Value);
+            }
 
-            return confirmation;
+            User user = await Users.Find(filter).FirstOrDefaultAsync();
+
+            return user != null && PasswordHelper.IsCorrect(user.password, password) ? user : null;
         }
 
         public async System.Threading.Tasks.Task<bool> IsUnique(string login, long? id = null, long? teamId = null, string? teamName = null)
