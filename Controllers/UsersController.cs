@@ -109,14 +109,14 @@ namespace TeamAppService.Controllers
             bool isUnique = await _context.IsUnique(user.login, null, user.teamId, user.teamName);
             bool isTeamAuth = await _context.IsTeamAuth(user.teamName, user.teamPassword);
 
-            if (!isTeamAuth)
-            {
-                return ValidationProblem(null, null, null, "Team name or team password is incorrect");
-            }
-
             if (!isUnique)
             {
-                return ValidationProblem(null, null, null, "Login must be unique");
+                return ValidationProblem("Login must be unique.");
+            }
+
+            if (!isTeamAuth)
+            {
+                return ValidationProblem("Team name or team password is incorrect.");
             }
 
             User correctUser = new User(user.login, user.password, user.teamName);
