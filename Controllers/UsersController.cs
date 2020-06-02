@@ -34,7 +34,8 @@ namespace TeamAppService.Controllers
         {
             if (login != null && password != null && (teamName != null || teamId != null))
             {
-                return await _context.IsAuth(login, password, teamName, teamId);
+                var authUser = await _context.IsAuth(login, password, teamName, teamId);
+                return authUser != null ? authUser : ValidationProblem("Team name, login or password is incorrect.");
             }
 
             var users = await _context.GetUsers(
