@@ -32,12 +32,6 @@ namespace TeamAppService.Controllers
             [FromQuery(Name = "teamId")] long? teamId
         )
         {
-            if (login != null && password != null && (teamName != null || teamId != null))
-            {
-                var authUser = await _context.IsAuth(login, password, teamName, teamId);
-                return authUser != null ? authUser : ValidationProblem("Team name, login or password is incorrect.");
-            }
-
             var users = await _context.GetUsers(
                 id,
                 date,
@@ -105,8 +99,20 @@ namespace TeamAppService.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(PostUser user)
+        public async Task<ActionResult<UserPostResponse>> PostUser(PostUser user, [FromQuery(Name = "isSignIn")] bool isSignIn = false)
         {
+            if (isSignIn)
+            {
+                var authUser = await _context.IsAuth(user.login, user.password, user.teamName);
+                
+                if(authUser != null)
+                {
+                    return new UserPostResponse(authUser);
+                }
+
+                return ValidationProblem("Team name, login or password is incorrect.");
+            }
+
             bool isUnique = await _context.IsUnique(user.login, null, user.teamId, user.teamName);
             bool isTeamAuth = await _context.IsTeamAuth(user.teamName, user.teamPassword);
 
@@ -125,9 +131,7 @@ namespace TeamAppService.Controllers
             await _context.Create(correctUser);
             await _context.SaveChangesAsync();
 
-            correctUser.password = PasswordHelper.HashPassword(user.password);
-
-            return CreatedAtAction(nameof(GetUser), new { id = user.id }, correctUser);
+            return CreatedAtAction(nameof(GetUser), new { id = user.id }, new UserPostResponse(correctUser));
         }
 
         // DELETE: api/Users/5

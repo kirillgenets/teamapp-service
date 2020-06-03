@@ -84,8 +84,13 @@ namespace TeamAppService.Models
             return await Users.Find(new BsonDocument("id", id)).FirstOrDefaultAsync();
         }
 
-        public async System.Threading.Tasks.Task<dynamic> IsAuth(string login, string password, string teamName, long? teamId = null)
+        public async System.Threading.Tasks.Task<dynamic> IsAuth(string login, string password, string teamName)
         {
+            if (String.IsNullOrWhiteSpace(teamName))
+            {
+                return null;
+            }
+
             var filterBuilder = new FilterDefinitionBuilder<User>();
             var filter = filterBuilder.Empty;
 
@@ -97,11 +102,6 @@ namespace TeamAppService.Models
             if (!String.IsNullOrWhiteSpace(teamName))
             {
                 filter = filter & filterBuilder.Eq("teamName", teamName);
-            }
-
-            if (teamId.HasValue)
-            {
-                filter = filter & filterBuilder.Eq("teamId", teamId.Value);
             }
 
             User user = await Users.Find(filter).FirstOrDefaultAsync();
