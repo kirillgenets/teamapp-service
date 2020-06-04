@@ -47,7 +47,7 @@ namespace TeamAppService.Controllers
 
         // GET: api/Teams/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Team>> GetTeam(long id)
+        public async Task<ActionResult<TeamPostResponse>> GetTeam(long id)
         {
             var team = await _context.GetTeam(id);
 
@@ -56,7 +56,7 @@ namespace TeamAppService.Controllers
                 return NotFound();
             }
 
-            return team;
+            return new TeamPostResponse(team);
         }
 
         // PUT: api/Teams/5
