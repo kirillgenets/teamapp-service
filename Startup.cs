@@ -30,6 +30,8 @@ namespace TeamAppService
                 opt.UseInMemoryDatabase("UserList"));
             services.AddDbContext<TeamContext>(opt =>
                 opt.UseInMemoryDatabase("TeamList"));
+            services.AddDbContext<CommentContext>(opt =>
+                opt.UseInMemoryDatabase("CommentList"));
             services.AddControllers();
         }
 
