@@ -26,10 +26,7 @@ namespace TeamAppService.Controllers
         public async Task<ActionResult<dynamic>> GetUsers(
             [FromQuery(Name = "id")] long? id,
             [FromQuery(Name = "date")] DateTime? date,
-            [FromQuery(Name = "login")] string? login,
-            [FromQuery(Name = "password")] string? password,
-            [FromQuery(Name = "teamName")] string? teamName,
-            [FromQuery(Name = "teamId")] long? teamId
+            [FromQuery(Name = "teamName")] string? teamName
         )
         {
             var users = await _context.GetUsers(
