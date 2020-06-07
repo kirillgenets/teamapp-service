@@ -30,6 +30,7 @@ namespace TeamAppService.Models
             string? text,
             long? authorId,
             string? authorName,
+            long? taskId,
             long? teamId
         )
         {
@@ -44,6 +45,11 @@ namespace TeamAppService.Models
             if (id.HasValue)
             {
                 filter = filter & filterBuilder.Eq("id", id.Value);
+            }
+
+            if (taskId.HasValue)
+            {
+                filter = filter & filterBuilder.Eq("taskId", taskId.Value);
             }
 
             if (date.HasValue)

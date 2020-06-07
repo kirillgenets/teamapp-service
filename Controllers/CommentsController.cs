@@ -29,6 +29,7 @@ namespace TeamAppService.Controllers
             [FromQuery(Name = "text")] string? text,
             [FromQuery(Name = "authorName")] string? authorName,
             [FromQuery(Name = "authorId")] long? authorId,
+            [FromQuery(Name = "taskId")] long? taskId,
             [FromQuery(Name = "teamId")] long? teamId
         )
         {
@@ -38,6 +39,7 @@ namespace TeamAppService.Controllers
                 text,
                 authorId,
                 authorName,
+                taskId,
                 teamId
             );
 

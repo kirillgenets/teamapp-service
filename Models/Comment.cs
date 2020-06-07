@@ -18,6 +18,8 @@ namespace TeamAppService.Models
         [DataMember]
         public string text { get; set; }
         [DataMember]
+        public long taskId { get; set; }
+        [DataMember]
         public long teamId { get; set; }
         [DataMember]
         public DateTime date { get; set; }
