@@ -69,7 +69,7 @@ namespace TeamAppService.Controllers
 
             if (!isUnique)
             {
-                return ValidationProblem(null, null, null, "Name must be unique");
+                return ValidationProblem("Name must be unique");
             }
 
             var originalTask = await _context.GetTeam(id);
@@ -109,7 +109,7 @@ namespace TeamAppService.Controllers
 
             if (!isUnique)
             {
-                return ValidationProblem(null, null, null, "Name must be unique");
+                return ValidationProblem("Name must be unique");
             }
 
             await _context.Create(team);

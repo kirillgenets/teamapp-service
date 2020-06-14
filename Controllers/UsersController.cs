@@ -62,7 +62,7 @@ namespace TeamAppService.Controllers
 
             if (!isUnique)
             {
-                return ValidationProblem(null, null, null, "Login must be unique");
+                return ValidationProblem("Login must be unique");
             }
 
             var originalTask = await _context.GetUser(id);
